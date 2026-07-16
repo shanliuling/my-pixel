@@ -1,0 +1,96 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  background-color: rgba(251, 251, 248, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* 品牌 Logo 旁的小像素图标 */
+.brandIcon {
+  display: grid;
+  grid-template-columns: repeat(3, 6px);
+  grid-template-rows: repeat(2, 6px);
+  gap: 2px;
+}
+
+.brandIcon span {
+  width: 6px;
+  height: 6px;
+  background: var(--ink);
+}
+
+.brandIcon span:nth-child(2),
+.brandIcon span:nth-child(3) {
+  background: transparent;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.navLink {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  position: relative;
+  padding: 4px 0;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--ink);
+  transition: width var(--duration-normal) var(--ease-out);
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+/* GitHub 外链标识 */
+.external {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.externalArrow {
+  font-size: 12px;
+  opacity: 0.6;
+  transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.navLink:hover .externalArrow {
+  opacity: 1;
+}
