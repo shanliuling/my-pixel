@@ -17,15 +17,49 @@
   z-index: 2;
 }
 
+/* Greeting (Hi, I'm Spark) */
+.greeting {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 24px;
+}
+
+.greetingIcon {
+  display: grid;
+  grid-template-columns: repeat(3, 5px);
+  grid-template-rows: repeat(2, 5px);
+  gap: 2px;
+}
+
+.greetingDot {
+  width: 5px;
+  height: 5px;
+  background-color: var(--blue);
+}
+
+.greetingDot:nth-child(1) { grid-column: 2; }
+.greetingDot:nth-child(2) { grid-column: 1; grid-row: 2; }
+.greetingDot:nth-child(3) { grid-column: 2; grid-row: 2; }
+.greetingDot:nth-child(4) { grid-column: 3; grid-row: 2; }
+
 /* 大标题：像素点阵风格 */
 .headline {
   font-family: var(--font-pixel);
-  font-size: clamp(56px, 7vw, 88px);
+  font-size: clamp(48px, 6vw, 76px);
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.01em;
   color: var(--ink);
   margin-bottom: 32px;
+}
+
+.highlightBlue {
+  color: var(--blue);
 }
 
 .headlineRow {
@@ -48,37 +82,38 @@
 
 /* 个人介绍 */
 .bio {
-  font-size: 15px;
-  line-height: 1.7;
-  color: var(--ink-light);
-  max-width: 360px;
-  margin-bottom: 32px;
-  border-left: 3px solid var(--ink);
-  padding-left: 16px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--ink);
+  max-width: 380px;
+  margin-bottom: 40px;
+  border-left: none;
+  padding-left: 0;
 }
 
-/* CTA 按钮——关键：width: fit-content 防止撑满 */
+/* CTA 按钮 */
 .cta {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
   width: fit-content;
-  padding: 14px 28px;
+  padding: 12px 24px;
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--paper);
-  background-color: var(--ink);
-  border: 2px solid var(--ink);
+  letter-spacing: 0.05em;
+  color: var(--blue);
+  background-color: transparent;
+  border: 1px solid var(--blue);
+  border-radius: 6px;
   cursor: pointer;
   transition: all var(--duration-normal) var(--ease-out);
 }
 
 .cta:hover {
-  background-color: transparent;
-  color: var(--ink);
+  background-color: var(--blue);
+  color: var(--paper);
 }
 
 .ctaArrow {
@@ -88,29 +123,6 @@
 
 .cta:hover .ctaArrow {
   transform: translateX(4px);
-}
-
-/* 状态指示器 */
-.status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 24px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--ink-muted);
-}
-
-.statusDot {
-  width: 8px;
-  height: 8px;
-  background-color: var(--green);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
 }
 
 /* ===== 右侧 Canvas 区域 ===== */

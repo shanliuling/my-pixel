@@ -7,43 +7,41 @@ export function Hero() {
     <section className={styles.hero}>
       {/* 左侧：标题 + 介绍 + CTA */}
       <div className={styles.content}>
+        <div className={styles.greeting}>
+          <span className={styles.greetingIcon} aria-hidden="true">
+            <span className={styles.greetingDot} />
+            <span className={styles.greetingDot} />
+            <span className={styles.greetingDot} />
+            <span className={styles.greetingDot} />
+          </span>
+          <span>Hi, I'm Spark.</span>
+        </div>
+
         <h1 className={styles.headline}>
+          <span className={styles.headlineRow}>TURNING IDEAS</span>
           <span className={styles.headlineRow}>
-            THINK<span className={styles.dot} style={{ background: 'transparent' }}>.</span>
+            INTO <span className={styles.highlightBlue}>USEFUL</span>
           </span>
           <span className={styles.headlineRow}>
-            BUILD<span className={`${styles.dot} ${styles.dotBlue}`} />
-          </span>
-          <span className={styles.headlineRow}>
-            SHIP<span className={`${styles.dot} ${styles.dotGreen}`} />
+            SOFTWARE<span className={styles.dot} />
           </span>
         </h1>
 
-        <p className={styles.bio}>{about.bio}</p>
+        <p className={styles.bio}>
+          I build digital products,<br/>
+          experiment with code,<br/>
+          and design intentional systems.
+        </p>
 
         <Link href="/work" className={styles.cta}>
-          Explore my work
+          EXPLORE MY WORK
           <span className={styles.ctaArrow} aria-hidden="true">→</span>
         </Link>
-
-        <div className={styles.status}>
-          <span className={styles.statusDot} aria-hidden="true" />
-          <span>{about.status}</span>
-        </div>
       </div>
 
-      {/* 右侧：Canvas 已经在全局 layout 中挂载，这里只保留装饰元素 */}
+      {/* 右侧：Canvas 已经在全局 layout 中挂载，这里作为占位和网格支撑 */}
       <div className={styles.canvasArea}>
-        <div className={styles.coords} aria-hidden="true">
-          X: 284<br />
-          Y: 128
-          <span className={styles.coordsCrosshair}>+</span>
-        </div>
-
-        <div className={styles.systemStatus} aria-hidden="true">
-          <div className={styles.systemStatusLabel}>System Status</div>
-          <div className={styles.systemStatusValue}>Active</div>
-        </div>
+        {/* 坐标指示器和系统状态已被移除 */}
       </div>
     </section>
   );
