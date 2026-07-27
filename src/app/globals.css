@@ -31,6 +31,7 @@
   --font-pixel: 'Pixelify Sans', monospace;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-editorial: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
 
   /* 动效 */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);

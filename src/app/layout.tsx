@@ -1,15 +1,8 @@
 import type { Metadata } from 'next';
-import { Inter, Pixelify_Sans, JetBrains_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono, Pixelify_Sans } from 'next/font/google';
 import { Header } from '@/components/Header/Header';
-import { PixelStage } from '@/features/pixel/PixelStage';
 import './globals.css';
 
-/**
- * 字体策略：
- * - Inter：正文，可读性极佳的现代无衬线
- * - Pixelify Sans：大标题，像素点阵风格
- * - JetBrains Mono：元数据/代码，等宽字体
- */
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-body',
@@ -47,8 +40,6 @@ export default function RootLayout({
     >
       <body>
         <Header />
-        {/* 全局唯一 Fixed Canvas */}
-        <PixelStage />
         {children}
       </body>
     </html>

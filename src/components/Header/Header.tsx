@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { about } from '@/data/about';
 import styles from './Header.module.css';
 
@@ -9,11 +12,42 @@ const navItems = [
   { label: 'Work', href: '/work' },
 ] as const;
 
+const homeNavItems = [
+  { label: 'Work', href: '/work' },
+  { label: 'Writing', href: '/notes' },
+  { label: 'About', href: '/about' },
+  { label: 'Notes', href: '/notes' },
+] as const;
+
 export function Header() {
+  const pathname = usePathname();
+
+  if (pathname === '/') {
+    return (
+      <header className={`${styles.header} ${styles.homeHeader}`}>
+        <Link href="/" className={styles.homeBrand} aria-label="Spark home">
+          SP<span>.</span>
+        </Link>
+
+        <nav className={`${styles.nav} ${styles.homeNav}`}>
+          {homeNavItems.map((item) => (
+            <Link key={item.label} href={item.href} className={styles.homeNavLink}>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        <Link href="/about" className={styles.contactButton}>
+          Get in touch
+          <span aria-hidden="true">↗</span>
+        </Link>
+      </header>
+    );
+  }
+
   return (
     <header className={styles.header}>
       <Link href="/" className={styles.brand}>
-        {/* 像素风小 Logo：3x2 方块阵列，缺两个角 */}
         <span className={styles.brandIcon} aria-hidden="true">
           <span />
           <span />
@@ -27,11 +61,7 @@ export function Header() {
 
       <nav className={styles.nav}>
         {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={styles.navLink}
-          >
+          <Link key={item.href} href={item.href} className={styles.navLink}>
             {item.label}
           </Link>
         ))}
@@ -42,7 +72,9 @@ export function Header() {
           rel="noopener noreferrer"
         >
           GitHub
-          <span className={styles.externalArrow} aria-hidden="true">↗</span>
+          <span className={styles.externalArrow} aria-hidden="true">
+            ↗
+          </span>
         </a>
       </nav>
     </header>

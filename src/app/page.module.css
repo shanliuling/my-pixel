@@ -1,8 +1,5 @@
 .page {
-  display: flex;
-  flex-direction: column;
   min-height: 100dvh;
-  /* 首页在 1440×900 下不应产生纵向滚动 */
-  max-height: 100dvh;
   overflow: hidden;
+  background: transparent;
 }
