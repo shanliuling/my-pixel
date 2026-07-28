@@ -51,6 +51,13 @@ const LOWER_WASH = {
   sourceEnd: 1,
 } as const;
 
+const SUN_DISC = {
+  x: (1063 - SOURCE_CROP.x) / SOURCE_CROP.width,
+  y: (254 - SOURCE_CROP.y) / SOURCE_CROP.height,
+  radiusX: 74 / SOURCE_CROP.width,
+  radiusY: 74 / SOURCE_CROP.height,
+} as const;
+
 function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
 }
@@ -77,6 +84,32 @@ function deterministicNoise(column: number, row: number) {
     Math.imul(column + 17, 374761393) ^
     Math.imul(row + 29, 668265263);
   return ((value ^ (value >>> 13)) >>> 0) / 4294967295;
+}
+
+function deepenInkChannel(
+  channel: number,
+  paperChannel: number,
+  gain: number,
+) {
+  return Math.round(
+    clamp(
+      paperChannel - (paperChannel - channel) * gain,
+      0,
+      255,
+    ),
+  );
+}
+
+function sunDiscDistance(
+  normalizedX: number,
+  normalizedY: number,
+) {
+  const deltaX =
+    (normalizedX - SUN_DISC.x) / SUN_DISC.radiusX;
+  const deltaY =
+    (normalizedY - SUN_DISC.y) / SUN_DISC.radiusY;
+
+  return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 }
 
 function lakeSurfaceAt(column: number, columns: number) {
@@ -201,6 +234,27 @@ function buildPixelField(
       const normalizedY = row / rows;
       const isCinnabar =
         red > 150 && red > green * 1.23 && red > blue * 1.18;
+      const sunDistance = sunDiscDistance(
+        normalizedX,
+        normalizedY,
+      );
+      const isSunDisc = sunDistance <= 1;
+      const isTextClearZone =
+        normalizedX < 0.285 &&
+        normalizedY > 0.3 &&
+        normalizedY < 0.52;
+      const lowerForegroundDepth =
+        clamp((normalizedX - 0.3) / 0.62, 0, 1) *
+        clamp((normalizedY - 0.4) / 0.46, 0, 1);
+      const rightPeakDepth =
+        clamp((normalizedX - 0.62) / 0.28, 0, 1) *
+        clamp((normalizedY - 0.14) / 0.2, 0, 1) *
+        clamp((0.78 - normalizedY) / 0.22, 0, 1);
+      const sceneDepth = clamp(
+        Math.max(lowerForegroundDepth, rightPeakDepth * 0.68),
+        0,
+        1,
+      );
 
       const isReferenceCrosshair =
         normalizedX > 0.705 &&
@@ -222,9 +276,12 @@ function buildPixelField(
         234 + lowerWashBlend * 8;
       const isSourceVisible =
         !isReferenceHint &&
+        !isTextClearZone &&
         sourceAlpha > 0.2 &&
-        distance > minimumInkDistance &&
-        (luminance < maximumWashLuminance || chroma > 17);
+        (isSunDisc ||
+          (distance > minimumInkDistance &&
+            (luminance < maximumWashLuminance ||
+              chroma > 17)));
       let isInkWashBridge = false;
       let bridgeRed: number = PAPER.red;
       let bridgeGreen: number = PAPER.green;
@@ -387,12 +444,47 @@ function buildPixelField(
       const x = gridOffsetX + column * cell + 1;
       const y = gridOffsetY + row * cell + 1;
 
-      if (isInkWashBridge) {
+      if (isSunDisc) {
+        const sunTone = deterministicNoise(
+          column + 157,
+          row + 163,
+        );
+        const edgeLift = clamp(
+          (sunDistance - 0.58) / 0.42,
+          0,
+          1,
+        );
         staticContext.fillStyle = pixelColor(
-          bridgeRed,
-          bridgeGreen,
-          bridgeBlue,
-          bridgeAlpha,
+          236 +
+            Math.round(sunTone * 5) +
+            Math.round(edgeLift * 3),
+          92 +
+            Math.round(sunTone * 8) +
+            Math.round(edgeLift * 10),
+          68 +
+            Math.round(sunTone * 7) +
+            Math.round(edgeLift * 9),
+          0.94,
+        );
+        staticContext.fillRect(x, y, cell - 1, cell - 1);
+        continue;
+      }
+
+      if (isInkWashBridge) {
+        const bridgeGain = 1 + sceneDepth * 0.34;
+        staticContext.fillStyle = pixelColor(
+          deepenInkChannel(bridgeRed, PAPER.red, bridgeGain),
+          deepenInkChannel(
+            bridgeGreen,
+            PAPER.green,
+            bridgeGain,
+          ),
+          deepenInkChannel(
+            bridgeBlue,
+            PAPER.blue,
+            bridgeGain,
+          ),
+          clamp(bridgeAlpha * (1 + sceneDepth * 0.1), 0, 1),
         );
         staticContext.fillRect(x, y, cell - 1, cell - 1);
         continue;
@@ -413,16 +505,47 @@ function buildPixelField(
         continue;
       }
 
-      const inkBoost = luminance < 115 ? 0.88 : 0.96;
-      const adjustedRed = Math.round(red * inkBoost);
-      const adjustedGreen = Math.round(green * inkBoost);
-      const adjustedBlue = Math.round(blue * inkBoost);
+      const sourceInkStrength = clamp(
+        (224 - luminance) / 150,
+        0,
+        1,
+      );
+      const toneNoise = deterministicNoise(
+        column + 149,
+        row + 151,
+      );
+      const inkGain = clamp(
+        1.04 +
+          sourceInkStrength * 0.08 +
+          sceneDepth *
+            sourceInkStrength *
+            (0.34 + toneNoise * 0.12),
+        1,
+        1.48,
+      );
+      const adjustedRed = isCinnabar
+        ? red
+        : deepenInkChannel(red, PAPER.red, inkGain);
+      const adjustedGreen = isCinnabar
+        ? green
+        : deepenInkChannel(green, PAPER.green, inkGain);
+      const adjustedBlue = isCinnabar
+        ? blue
+        : deepenInkChannel(blue, PAPER.blue, inkGain);
+      const adjustedAlpha = isCinnabar
+        ? alpha
+        : clamp(
+            alpha *
+              (1 + sceneDepth * sourceInkStrength * 0.08),
+            0,
+            1,
+          );
 
       staticContext.fillStyle = pixelColor(
         adjustedRed,
         adjustedGreen,
         adjustedBlue,
-        alpha,
+        adjustedAlpha,
       );
       staticContext.fillRect(x, y, cell - 1, cell - 1);
     }
@@ -497,6 +620,11 @@ function buildPixelField(
           ? clamp((211 - reflectedLuminance) / 128, 0, 1)
           : 0;
       const reflectionFade = Math.exp(-depth * 2.9);
+      const rightEdgeFade = clamp(
+        (1 - normalizedX) / 0.045,
+        0,
+        1,
+      );
 
       const placementNoise = deterministicNoise(
         column * 17 + 67,
@@ -504,6 +632,7 @@ function buildPixelField(
       );
       const density =
         openWater *
+        rightEdgeFade *
         (0.055 +
           (1 - depth) * 0.028 +
           clamp((normalizedX - 0.58) / 0.42, 0, 1) *
@@ -684,7 +813,13 @@ function renderFrame(
       ripple.red,
       ripple.green,
       ripple.blue,
-      ripple.alpha * shimmer,
+      ripple.alpha *
+        shimmer *
+        clamp(
+          (width - x - ripple.width) / (field.cell * 4),
+          0,
+          1,
+        ),
     );
     context.fillRect(
       x,
