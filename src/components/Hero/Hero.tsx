@@ -1,6 +1,13 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { about } from '@/data/about';
 import { InkPixelLandscape } from './InkPixelLandscape';
+import {
+  HERO_SCENE_EVENT,
+  type HeroScene,
+} from './heroScene';
 import styles from './Hero.module.css';
 
 function ArrowIcon() {
@@ -48,14 +55,36 @@ function MailIcon() {
 }
 
 export function Hero() {
+  const [isAboutPreview, setIsAboutPreview] = useState(false);
+
+  useEffect(() => {
+    const handleSceneChange = (event: Event) => {
+      const scene = (event as CustomEvent<HeroScene>).detail;
+      setIsAboutPreview(scene === 'about');
+    };
+
+    window.addEventListener(HERO_SCENE_EVENT, handleSceneChange);
+    return () => {
+      window.removeEventListener(
+        HERO_SCENE_EVENT,
+        handleSceneChange,
+      );
+    };
+  }, []);
+
   return (
     <section className={styles.hero}>
       <div className={styles.artFrame}>
         <InkPixelLandscape className={styles.inkLandscape} />
       </div>
 
-      <div className={styles.content}>
-        <div className={styles.eyebrow}>
+      <div
+        className={`${styles.content} ${
+          isAboutPreview ? styles.aboutPreview : ''
+        }`}
+      >
+        <div className={styles.homeCopy}>
+          <div className={styles.eyebrow}>
           <span className={styles.eyebrowRule} aria-hidden="true" />
           <span className={styles.eyebrowPixels} aria-hidden="true">
             <i />
@@ -64,11 +93,11 @@ export function Hero() {
             <i />
           </span>
           HELLO THERE
-        </div>
+          </div>
 
-        <h1 className={styles.headline}>
-          Hi, I&apos;m <span>Spark</span>.
-        </h1>
+          <h1 className={styles.headline}>
+            Hi, I&apos;m <span>Spark</span>.
+          </h1>
 
         <div className={styles.roles} aria-label="Designer, developer, and builder">
           <span>Designer</span>
@@ -86,15 +115,53 @@ export function Hero() {
           Currently exploring systems, simplicity, and tools.
         </p>
 
-        <div className={styles.actions}>
-          <Link href="/work" className={styles.primaryAction}>
-            View selected work
-            <ArrowIcon />
-          </Link>
-          <Link href="/about" className={styles.secondaryAction}>
-            About me
-            <ArrowIcon />
-          </Link>
+          <div className={styles.actions}>
+            <Link href="/work" className={styles.primaryAction}>
+              View selected work
+              <ArrowIcon />
+            </Link>
+            <Link href="/about" className={styles.secondaryAction}>
+              About me
+              <ArrowIcon />
+            </Link>
+          </div>
+        </div>
+
+        <div className={styles.aboutCopy} aria-hidden={!isAboutPreview}>
+          <div className={styles.eyebrow}>
+            <span className={styles.eyebrowRule} aria-hidden="true" />
+            ABOUT ME
+          </div>
+
+          <h2 className={styles.aboutHeadline}>
+            About <span>Spark</span>.
+          </h2>
+
+          <p className={styles.aboutLead}>
+            I build digital products,
+            <br />
+            explore AI, and share what I learn.
+          </p>
+
+          <span className={styles.aboutRule} aria-hidden="true" />
+
+          <p className={styles.aboutBio}>
+            I&apos;m a frontend developer based in Changsha, China.
+            <br />
+            I care about clean interfaces, thoughtful interactions,
+            <br />
+            and useful tools that solve real problems.
+            <br />
+            <br />
+            Currently exploring AI products and agent workflows.
+          </p>
+
+          <div className={styles.aboutSkills}>
+            <span><b>&lt;/&gt;</b>Code<small>Frontend · React / TS</small></span>
+            <span><b>✎</b>Design<small>UI · Interaction</small></span>
+            <span><b>◇</b>Build<small>AI products</small></span>
+            <span><b>▤</b>Write<small>Notes · Ideas</small></span>
+          </div>
         </div>
       </div>
 

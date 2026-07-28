@@ -45,6 +45,116 @@
   width: min(520px, 37vw);
 }
 
+.homeCopy,
+.aboutCopy {
+  transition:
+    opacity 520ms var(--ease-out),
+    transform 720ms cubic-bezier(0.65, 0, 0.35, 1),
+    filter 520ms var(--ease-out);
+}
+
+.homeCopy {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.aboutCopy {
+  position: absolute;
+  inset: -20px auto auto 0;
+  width: min(540px, 39vw);
+  opacity: 0;
+  filter: blur(5px);
+  pointer-events: none;
+  transform: translate3d(-22px, 18px, 0);
+}
+
+.aboutPreview .homeCopy {
+  opacity: 0;
+  filter: blur(5px);
+  pointer-events: none;
+  transform: translate3d(18px, -12px, 0);
+}
+
+.aboutPreview .aboutCopy {
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+}
+
+.aboutHeadline {
+  font-family: var(--font-editorial);
+  font-size: clamp(52px, 4.3vw, 74px);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+.aboutHeadline span {
+  color: #0a7180;
+}
+
+.aboutLead {
+  margin-top: 25px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.aboutRule {
+  display: block;
+  width: 30px;
+  height: 2px;
+  margin: 24px 0 25px;
+  background: #0a8694;
+}
+
+.aboutBio {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.9;
+  color: #263238;
+}
+
+.aboutSkills {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 500px;
+  margin-top: 34px;
+  border-top: 1px solid rgba(17, 28, 31, 0.18);
+}
+
+.aboutSkills > span {
+  display: grid;
+  gap: 5px;
+  padding: 18px 12px 0;
+  border-right: 1px solid rgba(17, 28, 31, 0.16);
+  font-family: var(--font-editorial);
+  font-size: 14px;
+}
+
+.aboutSkills > span:first-child {
+  padding-left: 0;
+}
+
+.aboutSkills > span:last-child {
+  border-right: 0;
+}
+
+.aboutSkills b {
+  min-height: 25px;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.aboutSkills small {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  line-height: 1.5;
+  color: #566167;
+}
+
 .eyebrow {
   display: flex;
   align-items: center;
@@ -384,5 +494,10 @@
 @media (prefers-reduced-motion: reduce) {
   .inkLandscape {
     animation: none;
+  }
+
+  .homeCopy,
+  .aboutCopy {
+    transition-duration: 0ms;
   }
 }

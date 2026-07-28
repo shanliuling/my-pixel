@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { about } from '@/data/about';
+import { announceHeroScene } from '@/components/Hero/heroScene';
 import styles from './Header.module.css';
 
 const navItems = [
@@ -21,6 +22,8 @@ const homeNavItems = [
 
 export function Header() {
   const pathname = usePathname();
+  const showAboutPreview = () => announceHeroScene('about');
+  const hideAboutPreview = () => announceHeroScene('landscape');
 
   if (pathname === '/') {
     return (
@@ -30,11 +33,31 @@ export function Header() {
         </Link>
 
         <nav className={`${styles.nav} ${styles.homeNav}`}>
-          {homeNavItems.map((item) => (
-            <Link key={item.label} href={item.href} className={styles.homeNavLink}>
-              {item.label}
-            </Link>
-          ))}
+          {homeNavItems.map((item) => {
+            const previewsAbout = item.label === 'About';
+
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={styles.homeNavLink}
+                onPointerEnter={
+                  previewsAbout ? showAboutPreview : undefined
+                }
+                onPointerLeave={
+                  previewsAbout ? hideAboutPreview : undefined
+                }
+                onFocus={
+                  previewsAbout ? showAboutPreview : undefined
+                }
+                onBlur={
+                  previewsAbout ? hideAboutPreview : undefined
+                }
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <Link href="/about" className={styles.contactButton}>
